@@ -5,7 +5,10 @@
 </div>
 
 
-Welcome to the All-jellyfin-media-server Repository! This repository contains everything you need to create your own Jellyfin media server with Sonarr, Radarr, Jellyseerr, Prowlarr, Jackett, qBittorrent, and Gluetun (VPN) in a Docker Compose setup. We'll refer to the compilation of all containers as **Isyrr** to keep it simple.
+Welcome to the All-jellyfin-media-server Repository! This repository contains everything you need to create your own Jellyfin media server with Sonarr, Radarr, Jellyseerr, Prowlarr, Jackett, qBittorrent, and VPN (Gluetun or Tailscale) in a Docker Compose setup. We'll refer to the compilation of all containers as **Isyrr** to keep it simple.
+
+> [!NOTE]
+> **Platform Compatibility:** This setup works on any Linux distribution including **Arch Linux**, Debian, Ubuntu, and more. All services run in Docker containers, making them platform-agnostic.
 
 ![](https://img.shields.io/github/stars/Morzomb/All-jellyfin-media-server.svg)
 ![](https://img.shields.io/github/forks/Morzomb/All-jellyfin-media-server.svg)
@@ -32,6 +35,7 @@ Welcome to the All-jellyfin-media-server Repository! This repository contains ev
     - [**Prowlarr**](#prowlarr)
     - [**qBittorrent**](#qbittorrent)
     - [**Gluetun (VPN)**](#gluetun-vpn)
+    - [**Tailscale (VPN Alternative)**](#tailscale-vpn-alternative)
 - [**Prerequisites**](#prerequisites)
   - [**Docker**](#docker)
     - [**Using Docker Compose :**](#using-docker-compose-)
@@ -43,11 +47,15 @@ Welcome to the All-jellyfin-media-server Repository! This repository contains ev
   - [**NORD**](#nord)
   - [**PROTON**](#proton)
   - [**Troubleshoot VPN**](#troubleshoot-vpn)
+- [**Tailscale VPN Setup**](#tailscale-vpn-setup)
+  - [**Getting Started with Tailscale**](#getting-started-with-tailscale)
 - [**Installation**](#installation)
   - [**1. Basic Installation**](#1-basic-installation)
   - [**2. Installation with NVIDIA Only**](#2-installation-with-nvidia-only)
   - [**3. Installation with NVIDIA and VPN**](#3-installation-with-nvidia-and-vpn)
   - [**4. Installation with VPN (no-Nvidia)**](#4-installation-with-vpn-no-nvidia)
+  - [**5. Installation with Tailscale (No GPU)**](#5-installation-with-tailscale-no-gpu)
+  - [**6. Installation with Tailscale + Intel GPU**](#6-installation-with-tailscale--intel-gpu-recommended-for-arch-linux-laptops)
 - [**Accessing Applications**](#accessing-applications)
 - [**Configuration Guide for Web Interfaces Only**](#configuration-guide-for-web-interfaces-only)
   - [**qBittorrent**](#qbittorrent-1)
@@ -162,6 +170,18 @@ Isyrr uses Docker and Docker Compose to deploy the services. Docker Compose file
 <div style="text-align: center">
     <img src="https://m.media-amazon.com/images/I/51gvJaXQh4L.png" width="200" height="200" style="margin-right: 10px;">
     <img src="https://m.media-amazon.com/images/I/31o0QB0R0sL.png" width="200" height="200" style="margin-left: 10px;">
+</div>
+
+### **Tailscale (VPN Alternative)**
+
+[Tailscale](https://tailscale.com/) is a modern VPN solution built on WireGuard that creates a secure mesh network. It offers:
+- **Exit node routing** for qBittorrent traffic (privacy for downloads)
+- **Subnet routing** to share Jellyfin access with friends remotely
+- Zero-configuration mesh networking
+- Easy authentication and device management
+
+<div style="text-align: center">
+  <img src="https://tailscale.com/files/tailscale-logo-square.svg" width="200" height="200" style="margin: 15px 10px;">
 </div>
 
 ---
@@ -552,6 +572,80 @@ On my side, it shows me an IP address in Belgium :
 
 ---
 
+# **Tailscale VPN Setup**
+
+Tailscale provides a modern alternative to traditional VPN solutions like Gluetun. It offers both privacy for your downloads and easy remote access for friends.
+
+## **Getting Started with Tailscale**
+
+### **1. Create a Tailscale Account**
+
+1. Go to [https://tailscale.com/](https://tailscale.com/) and sign up for a free account
+2. You can use Google, Microsoft, or GitHub for authentication
+
+### **2. Generate an Auth Key**
+
+1. Visit the [Tailscale Admin Console](https://login.tailscale.com/admin/settings/keys)
+2. Click **Generate auth key**
+3. Configure the key:
+   - Check **Reusable** (allows multiple device connections)
+   - Set expiration to **90 days** or longer
+   - Optionally add tags for organization
+4. Copy the generated key (starts with `tskey-auth-`)
+5. Save this key in your `.env` file as `TS_AUTHKEY`
+
+### **3. Set Up an Exit Node**
+
+For qBittorrent privacy, you need a Tailscale exit node to route torrent traffic.
+
+**Option A: Use Your Own Device/VPS**
+1. Install Tailscale on a Linux VPS or another computer:
+   ```bash
+   curl -fsSL https://tailscale.com/install.sh | sh
+   ```
+2. Enable it as an exit node:
+   ```bash
+   sudo tailscale up --advertise-exit-node
+   ```
+3. In the [Tailscale Admin Console](https://login.tailscale.com/admin/machines), approve the exit node
+
+**Option B: Use Tailscale's Mullvad Integration**
+1. In the Tailscale Admin Console, go to **Exit Nodes**
+2. Enable **Mullvad Exit Nodes** (requires Mullvad VPN subscription)
+3. Select your preferred location
+
+### **4. Configure Subnet Routing (Optional - For Friend Access)**
+
+To allow friends to access Jellyfin through Tailscale:
+
+1. In your `.env` file, set `TS_ROUTES` to your local network CIDR:
+   ```bash
+   TS_ROUTES=192.168.1.0/24
+   ```
+   (Replace with your actual network range)
+
+2. After starting the containers, approve the routes in the [Tailscale Admin Console](https://login.tailscale.com/admin/machines)
+
+3. Share Tailscale access with friends:
+   - In Admin Console, go to **Users**
+   - Invite friends via email
+   - They install Tailscale and connect
+   - They can access Jellyfin at `http://jellyfin-server:8096` or your machine's Tailscale IP
+
+### **5. Verify VPN Connection**
+
+Once containers are running, test that qBittorrent traffic goes through Tailscale:
+
+```bash
+docker exec qbittorrent curl -s https://api.ipify.org/
+```
+
+This should show your exit node's IP address, not your home IP.
+
+**[`^        back to top        ^`](#table-of-contents)**
+
+---
+
 # **Installation**
 
 First, clone the repository :
@@ -630,7 +724,7 @@ docker compose -f docker-compose-<YOUR_VPN>-vpn.yaml up -d
 
 ## **4. Installation with VPN (no-Nvidia)**
 
-> [!WARNING]  
+> [!WARNING]
 > If you use this method, fill in the `.env` file located in `compose_files/VPN`.
 
 Standard installation with a `VPN`:
@@ -642,6 +736,47 @@ cd compose_files/VPN/
 docker compose -f docker-compose-<YOUR_VPN>-vpn.yaml up -d
 ```
 [Go to the file here](compose_files/VPN-Only/)
+
+## **5. Installation with Tailscale (No GPU)**
+
+> [!WARNING]
+> If you use this method, fill in the `.env` file located in `compose_files/Tailscale/` with your Tailscale auth key.
+
+Standard installation with **Tailscale VPN** (no GPU hardware acceleration):
+
+To start the installation, execute:
+
+```bash
+cd compose_files/Tailscale/
+docker compose -f docker-compose-tailscale.yaml up -d
+```
+
+## **6. Installation with Tailscale + Intel GPU (Recommended for Arch Linux Laptops)**
+
+> [!WARNING]
+> If you use this method, fill in the `.env` file located in `compose_files/Tailscale/` with your Tailscale auth key.
+
+Installation with **Tailscale VPN** and **Intel QuickSync** hardware transcoding (Intel Iris Xe, Intel HD Graphics, etc.):
+
+**Prerequisites for Arch Linux:**
+```bash
+# Ensure Intel GPU drivers are installed
+sudo pacman -S intel-media-driver libva-intel-driver
+
+# Verify GPU is detected
+ls -l /dev/dri/
+
+# Check video and render group IDs (update docker-compose if needed)
+getent group video
+getent group render
+```
+
+To start the installation, execute:
+
+```bash
+cd compose_files/Tailscale/
+docker compose -f docker-compose-tailscale-intel.yaml up -d
+```
 
 **[`^        back to top        ^`](#table-of-contents)**
 
