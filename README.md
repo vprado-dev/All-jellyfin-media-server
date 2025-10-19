@@ -12,13 +12,13 @@ Welcome to the All-jellyfin-media-server Repository! This repository contains ev
 
 ![](https://img.shields.io/github/stars/Morzomb/All-jellyfin-media-server.svg)
 ![](https://img.shields.io/github/forks/Morzomb/All-jellyfin-media-server.svg)
-![](https://img.shields.io/github/release/Morzomb/All-jellyfin-media-server.svg) 
+![](https://img.shields.io/github/release/Morzomb/All-jellyfin-media-server.svg)
 ![](https://img.shields.io/github/issues/Morzomb/All-jellyfin-media-server.svg)
 [![GitHub last commit](https://img.shields.io/github/last-commit/Morzomb/All-jellyfin-media-server.svg)](https://github.com/Morzomb/All-jellyfin-media-server/commits/master)
 ![GitHub repo size](https://img.shields.io/github/repo-size/Morzomb/All-jellyfin-media-server)
 ![visitors](https://visitor-badge.laobi.icu/badge?page_id=Morzomb.All-jellyfin-media-server.id)
 
-> [!NOTE] 
+> [!NOTE]
 > **Acceder au repository en [Français](README-fr.md)**
 
 ## **Table of contents**
@@ -89,7 +89,7 @@ This repository allows you to create your own Jellyfin media server with all the
 
 Isyrr uses Docker and Docker Compose to deploy the services. Docker Compose files can be found in the directories with-vpn and without-vpn.
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > To use Docker Compose, make sure Docker is installed on your system.
 
 ---
@@ -106,8 +106,8 @@ Isyrr uses Docker and Docker Compose to deploy the services. Docker Compose file
 
 [Jellyseerr](https://github.com/Fallenbagel/jellyseerr) is an open-source application that allows you to automate the management of your Jellyfin media server. It works by monitoring your Jellyfin library and automatically searching for and downloading new content based on your preferences. Jellyseerr supports integration with various other tools, such as Sonarr and Radarr, to provide a seamless experience for managing your media collection.
 
-<div style="text-align: center"> 
-    <img src="https://raw.githubusercontent.com/Fallenbagel/jellyseerr/develop/public/logo_full.svg" width="300" height="100" style="margin: 15px 10px;"> 
+<div style="text-align: center">
+    <img src="https://raw.githubusercontent.com/Fallenbagel/jellyseerr/develop/public/logo_full.svg" width="300" height="100" style="margin: 15px 10px;">
 </div>
 
 ### **Sonarr**
@@ -176,7 +176,6 @@ Isyrr uses Docker and Docker Compose to deploy the services. Docker Compose file
 
 [Tailscale](https://tailscale.com/) is a modern VPN solution built on WireGuard that creates a secure mesh network. It offers:
 - **Exit node routing** for qBittorrent traffic (privacy for downloads)
-- **Subnet routing** to share Jellyfin access with friends remotely
 - Zero-configuration mesh networking
 - Easy authentication and device management
 
@@ -188,7 +187,7 @@ Isyrr uses Docker and Docker Compose to deploy the services. Docker Compose file
 
 # **Prerequisites**
 
-> [!NOTE]  
+> [!NOTE]
 > This service requires a machine with at least 4 CPU cores and 8 GB of RAM. It is also highly recommended to have an NVIDIA GPU for optimal performance.
 
 Première chose à faire mettre à jour votre systèmes :
@@ -236,7 +235,7 @@ docker-compose down
 
 ## **NVIDIA**
 
-> [!WARNING]  
+> [!WARNING]
 > Please be aware that due to the recent updates to Debian 12 and Proxmox, NVIDIA drivers have become unstable. Therefore, there are two methods for installing the drivers.
 
 For my server, it has an NVIDIA GeForce 1060 graphics card. The installed OS is Proxmox 8.1.10, based on Debian 12. If you need to check compatibility, refer to the [NVIDIA support matrix](https://developer.nvidia.com/video-encode-and-decode-gpu-support-matrix-new).
@@ -374,7 +373,7 @@ root@pve:~#nvidia-smi
 
 ## **Second Method**
 
-> [!WARNING]  
+> [!WARNING]
 > This method is deprecated as it can cause significant conflicts if you frequently update your server.
 
 1. Your `/etc/apt/sources.list` should look like this :
@@ -394,7 +393,7 @@ deb http://security.debian.org/debian-security bookworm-security main contrib
 deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
 ```
 
-And : 
+And :
 
 ```bash
 curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
@@ -484,9 +483,9 @@ cd nvidia-patch
 ./patch.sh
 ```
 
-> [!CAUTION]  
+> [!CAUTION]
 > If you need to restart the installation, here’s how to uninstall the NVIDIA drivers:
-> 
+>
 > ```bash
 > apt remove nvidia-driver
 > apt purge *nvidia*
@@ -549,10 +548,10 @@ Go to [Protont VPN](https://account.protonvpn.com/downloads) website.
     <img src="image/vpn/pro3.png" style="margin: 15px 10px;">
 </div>
 
-> [!CAUTION]  
+> [!CAUTION]
 > Make sure you have either downloaded the file or copied its content into a text file, as some information will no longer be available after you click "Close".
 
-## **Troubleshoot VPN** 
+## **Troubleshoot VPN**
 
 Once the Docker is launched, you can test your VPN with the following command :
 
@@ -574,7 +573,7 @@ On my side, it shows me an IP address in Belgium :
 
 # **Tailscale VPN Setup**
 
-Tailscale provides a modern alternative to traditional VPN solutions like Gluetun. It offers both privacy for your downloads and easy remote access for friends.
+Tailscale provides a modern alternative to traditional VPN solutions like Gluetun. It offers both privacy for your downloads and easy remote access.
 
 ## **Getting Started with Tailscale**
 
@@ -614,9 +613,9 @@ For qBittorrent privacy, you need a Tailscale exit node to route torrent traffic
 2. Enable **Mullvad Exit Nodes** (requires Mullvad VPN subscription)
 3. Select your preferred location
 
-### **4. Configure Subnet Routing (Optional - For Friend Access)**
+### **4. Configure Subnet Routing (Optional)**
 
-To allow friends to access Jellyfin through Tailscale:
+To allow machines to access Jellyfin through Tailscale:
 
 1. In your `.env` file, set `TS_ROUTES` to your local network CIDR:
    ```bash
@@ -626,11 +625,11 @@ To allow friends to access Jellyfin through Tailscale:
 
 2. After starting the containers, approve the routes in the [Tailscale Admin Console](https://login.tailscale.com/admin/machines)
 
-3. Share Tailscale access with friends:
+3. Share Tailscale access:
    - In Admin Console, go to **Users**
-   - Invite friends via email
-   - They install Tailscale and connect
-   - They can access Jellyfin at `http://jellyfin-server:8096` or your machine's Tailscale IP
+   - Invite via email
+   - You can install Tailscale and connect
+   - Then you can access Jellyfin at `http://jellyfin-server:8096` or your machine's Tailscale IP
 
 ### **5. Verify VPN Connection**
 
@@ -671,7 +670,7 @@ TZ=Europe/Paris
 # OPENVPN_PASSWORD=password  # Your password for NordVPN
 # SERVER_REGIONS=Belgium  # Choose the server region (Belgium here)
 
-# PROTON VPN 
+# PROTON VPN
 # ENDPOINT_IP=PEER_ENDPOINT_IP  # The endpoint IP address of the VPN server
 # WIREGUARD_ADDR=Interface_Address  # The WireGuard interface address
 # ENDPOINT_PORT=51820  # Default port is 51820, but confirm if different
@@ -680,7 +679,7 @@ TZ=Europe/Paris
 # PRIVATE_KEY=Interface_PrivateKey  # Your private key
 ```
 
-> [!WARNING]  
+> [!WARNING]
 > Make sure you uncomment and configure the settings according to the VPN service you're using. This step is essential for establishing a proper VPN connection.
 
 ## **1. Basic Installation**
@@ -709,7 +708,7 @@ docker compose -f docker-compose-nvidia.yaml up -d
 
 ## **3. Installation with NVIDIA and VPN**
 
-> [!WARNING]  
+> [!WARNING]
 > If you use this method, fill in the `.env` file located in `compose_files/VPN-nvidia`.
 
 Standard installation with both `VPN` and `NVIDIA`:
@@ -784,7 +783,7 @@ docker compose -f docker-compose-tailscale-intel.yaml up -d
 
 Once the applications are deployed, you can access them using the following addresses :
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > Replace `localhost` with the IP address of your machine or remote server if needed.
 
 
@@ -800,7 +799,7 @@ Gluetun (Nord VPN) will be automatically configured to be used with the applicat
 
 # **Configuration Guide for Web Interfaces Only**
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > All links containing the container name can be replaced with either the server IP or `localhost`. Also, replace `/COMMON_PATH/` with the path you configured in the `.env` file.
 
 
@@ -810,7 +809,7 @@ Gluetun (Nord VPN) will be automatically configured to be used with the applicat
 2. Log in with the default credentials:
    - **Username**: `admin`
    - **Password**: `adminadmin`
-   
+
 <div style="text-align: center">
     <img src="image/qBittorrent/qbit1.png" style="margin: 15px 10px;">
 </div>
@@ -823,7 +822,7 @@ Gluetun (Nord VPN) will be automatically configured to be used with the applicat
    - **When Torrent Category changed**: `Relocate torrent`
    - **When Default Save Path changed**: `Relocate affected torrents`
    - **When Category Save Path changed**: `Relocate affected torrents`
-   - **Default Save Path**: `/downloads` 
+   - **Default Save Path**: `/downloads`
 3. Click **SAVE**.
 
 <div style="text-align: center">
