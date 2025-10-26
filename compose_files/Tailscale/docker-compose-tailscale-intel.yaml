@@ -169,3 +169,16 @@ services:
     ports:
       - 6767:6767
     restart: unless-stopped
+
+  maintainerr:
+    image: ghcr.io/jorenn92/maintainerr:latest
+    container_name: maintainerr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=${TZ}
+    volumes:
+      - ${COMMON_PATH}/configs/maintainerr:/opt/data
+    ports:
+      - 6246:6246
+    restart: unless-stopped
