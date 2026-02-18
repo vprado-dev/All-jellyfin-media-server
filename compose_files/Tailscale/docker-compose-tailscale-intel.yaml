@@ -127,7 +127,7 @@ services:
     # Add video and render group access for GPU
     group_add:
       - "44"   # video group (verify with: getent group video)
-      - "109"  # render group (verify with: getent group render)
+      - "992"  # render group (verify with: getent group render)
     ports:
       - 8096:8096
       - 8920:8920
@@ -174,8 +174,8 @@ services:
     image: ghcr.io/jorenn92/maintainerr:latest
     container_name: maintainerr
     environment:
-      - PUID=0
-      - PGID=0
+      - PUID=1000
+      - PGID=1000
       - TZ=${TZ}
     volumes:
       - ${COMMON_PATH}:${COMMON_PATH}
